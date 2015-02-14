@@ -12,24 +12,33 @@ class Spammer
   def calc_spamminess(word)
 
     # [0] = the hash [1] = size of sample
-    word = word.downcase
+    # word = word.downcase
 
-    total_sample = (@ham[1] + @spam[1])
-    spam_word = @spam[0].fetch(word, 0)
-    total_word = @ham[0].fetch(word, 0) + spam_word
+    # total num of spam emails
+    spam_emails = @spam[1]
 
-    num = (spam_word / total_word.to_f) * (total_word / total_sample.to_f) 
-    denom = (total_word * total_sample.to_f )
+    # total num of emails
+    total_emails = (@ham[1] + @spam[1])
+
+    
+    # num of spam emails containing spam word
+    spam_word = @spam[0].fetch(word)
+
+
+    # total num of email containing spam word
+    total_word = @ham[0].fetch(word) + spam_word
+
+
+    num = (spam_word / spam_emails.to_f) * (spam_emails / total_emails.to_f) 
+    denom = (total_word / total_emails.to_f )
     percent_spammy = (num / denom) 
-    puts num
-    puts denom
 
-    puts "#{word} is #{percent_spammy}% spammy"
+    puts "#{word} is #{percent_spammy * 100}% spammy"
   end
 end
 
 
-  Spammer.new('free')
+  Spammer.new('million')
   Spammer.new('drugs')
 
 
