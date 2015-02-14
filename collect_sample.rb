@@ -14,12 +14,10 @@ class CountSamples
 
     File.open("ham.yml", "w") do |file|
       file.write ham_hash.to_yaml
-      puts 'poo'
     end
 
     File.open("spam.yml", "w") do |file|
       file.write spam_hash.to_yaml
-      puts 'dog'
     end
   end
 
@@ -28,14 +26,17 @@ class CountSamples
     size = 0
 
     Dir.foreach("#{Dir.pwd}/#{dir_name}/") do |name|
+      email = []
       next if name == '.' or name == '..' or name == 'cmds'
 
       File.open("#{Dir.pwd}/#{dir_name}/#{name}", "r") do |f|
-        f.each_line { |l| sample << l }
+        f.each { |l| email << l }
       end
+
+      sample << email.join
       size += 1
     end
-
+    puts size, sample.length
     return [size, sample]
   end
 
@@ -44,34 +45,33 @@ class CountSamples
     hash = {}
 
     sample.each do |s|
-      # removes html tags
-      s.force_encoding("iso-8859-1").gsub!(/ <.*> /, '')
-
-      # removes most email addresses
-      s.gsub!(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i, '')
-
-      # removes punctuation
-      s.gsub!(/ [[:punct:]] /, ' ')
-      
-      # remove number/letter "words"
-      s.gsub!(/\w+\d+/, ' ')
-      
-      #removes characters
-      s.gsub!(/\W/, ' ')
-      
-      s.split(' ').each do |w|
-        next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
+      sample_array = []
+        # removes html tags
+        s.force_encoding("iso-8859-1").gsub!(/ <.*> /, '')
+        # removes most email addresses
+        s.gsub!(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i, '')
+        # removes punctuation
+        s.gsub!(/ [[:punct:]] /, ' ')
+        # remove number/letter "words"
+        s.gsub!(/\w+\d+/, ' ')
+        #removes characters
+        s.gsub!(/\W/, ' ')
         
-        w.downcase!
-        if hash.has_key?(w)
-          hash[w] += 1
-        else 
-          hash[w] = 1
+        s.split(' ').each do |w|
+          next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
+          w.downcase!
+          sample_array << w unless sample_array.include?(w)
+        end
+    
+      # reconcile main hash with individual emails
+      sample_array.each do |word|
+        if hash.has_key?(word)
+          hash[word] += 1
+        else
+          hash[word] = 1
         end
       end
     end
-
-    hash.delete_if {|key, value| value < 2 }
     return hash
   end
 end
