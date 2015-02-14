@@ -22,17 +22,19 @@ def count_frequency(sample)
 
   sample.each do |s|
     # removes non UTF-8 characters
-    s.force_encoding("iso-8859-1").gsub!(/\W/, ' ')
+    s.force_encoding("iso-8859-1").gsub!(/ <.*> /, '')
 
     # removes most email addresses
     s.gsub!(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i, '')
 
-    # removes html tags, punctuation, numbers
-    s.gsub!(/[ <.*> [[:punct:]] [[:digit:]] ]/, ' ')
-
+    # removes punctuation, numbers
+    s.gsub!(/[ [[:punct:]] [[:digit:]] ]/, ' ')
+    
+    s.gsub!(/\W/, ' ')
     s.split(' ').each do |w|
       next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
       
+      w.downcase!
       if hash.has_key?(w)
         hash[w] += 1
       else 
@@ -41,10 +43,12 @@ def count_frequency(sample)
     end
   end
 
+  hash.delete_if {|key, value| value < 2 }
   return hash
 end
 
 def calc_spamminess(word) 
+  word = word.downcase
   ham = count_frequency( get_sample("easy_ham")[1])
   ham_size = get_sample("easy_ham")[0]
 
@@ -52,9 +56,9 @@ def calc_spamminess(word)
   spam_size = get_sample("spam")[0]
 
   total_sample = (ham_size + spam_size).to_f
-  spam_word = spam[word]
-  total_word = ham[word] + spam_word
-  
+  spam_word = spam.fetch(word, 0)
+  total_word = ham.fetch(word, 0) + spam_word
+
   puts "#{word} occurs in Spam: #{spam[word]} of #{spam_size}"
   puts "#{word} occurs in Ham: #{ham[word]} of #{ham_size}"
 
