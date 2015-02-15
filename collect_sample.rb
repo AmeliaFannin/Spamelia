@@ -6,8 +6,26 @@ require 'yaml'
 class CountSamples
 
   def initialize
-    ham = get_sample("easy_ham")
-    spam = get_sample("spam")
+    ham_files = ["easy_ham"]
+    spam_files = ["spam", "spam_2"]
+    
+    ham = [0, []]
+    spam = [0, []]
+    
+    ham_files.each do |h|
+      ham_sample = get_sample(h)
+
+      ham[0] += ham_sample[0]
+      ham[1] += ham_sample[1]
+    end
+
+    spam_files.each do |s|
+      spam_sample = get_sample(s)
+      spam[0] += spam_sample[0]
+      spam[1] += spam_sample[1]
+    end
+     
+    # spam = get_sample("spam") + get_sample("spam_2")
 
     ham_hash = [count_frequency(ham[1]), ham[0]]
     spam_hash = [count_frequency(spam[1]), spam[0]]
@@ -36,6 +54,8 @@ class CountSamples
       sample << email.join
       size += 1
     end
+
+    puts size
     return [size, sample]
   end
 
@@ -57,7 +77,7 @@ class CountSamples
         s.gsub!(/\W/, ' ')
         
         s.split(' ').each do |w|
-          next if w.length < 3 || w.length > 15 || stopwords.include?(w)
+          next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
           w.downcase!
           sample_array << w unless sample_array.include?(w)
         end
