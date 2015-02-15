@@ -8,7 +8,7 @@ require 'JSON'
 
 post '/' do
   data = JSON.parse request.body.read
-  multi_word_spam(data["email_text"])
+  multi_word_spam(data["email_text"]).to_json
   # puts data
 end
 
@@ -80,35 +80,13 @@ def multi_word_spam(message)
       puts percent
       
       if percent >= 0.90
-        likelyhood = percent
-        break
+        return "message is probably spam."
+      elsif percent < 0.009
+        return "message is probably not spam."
       end
     end
   end
   
 
-  puts "message is #{likelyhood * 100}% likely spammy"
+  
 end
-
-test_message = <<HEREDOC
-Martin Adamson wrote:
-> 
-> Isn't it just basically a mixture of beaten egg and bacon (or pancetta, 
-> really)? You mix in the raw egg to the cooked pasta and the heat of the pasta 
-> cooks the egg. That's my understanding.
-> 
-
-You're probably right, mine's just the same but with the cream added to the 
-eggs.  I guess I should try it without.  Actually looking on the internet for a 
-recipe I found this one from possibly one of the scariest people I've ever seen, 
-and he's a US Congressman:
-<http://www.virtualcities.com/ons/me/gov/megvjb1.htm>
-
-That's one of the worst non-smiles ever.
-
-Stew
-ps. Apologies if any of the list's Maine residents voted for this man, you won't 
-do it again once you've seen this pic.
-HEREDOC
-
-# multi_word_spam(test_message)
