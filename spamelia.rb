@@ -1,4 +1,11 @@
+require 'sinatra'
+require 'bundler'
+
 require 'yaml'
+
+get '/' do
+  "hi there"
+end
 
 
 def calc_spamminess(word)
@@ -100,4 +107,4 @@ ps. Apologies if any of the list's Maine residents voted for this man, you won't
 do it again once you've seen this pic.
 HEREDOC
 
-multi_word_spam(test_message)
+# multi_word_spam(test_message)
