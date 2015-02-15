@@ -41,7 +41,7 @@ def probability_per_word(word)
       puts "#{word} is #{percent_spammy * 100}% spammy"
       return percent_spammy
     else
-      return 0.01
+      return 0.1
     end
 end
 
@@ -75,7 +75,7 @@ def test_message(message)
       percent = p_array.reduce(:*)/ (p_array.reduce(:*) + p_array.map {|p| 1 - p.to_f}.reduce(:*))
       puts percent
       
-      if percent >= 0.90
+      if percent >= 0.90 || percent < 0.001
         likelyhood = percent
         break
       end
