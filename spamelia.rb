@@ -7,6 +7,10 @@ get '/' do
   "hi there"
 end
 
+post '/' do
+  "posted something"
+end
+
 
 def calc_spamminess(word)
   @ham = YAML::load_file "ham.yml"
