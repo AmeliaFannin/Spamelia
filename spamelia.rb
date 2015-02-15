@@ -3,24 +3,14 @@ require 'bundler'
 # require 'net/http'
 # require 'uri'
 require 'yaml'
+require 'JSON'
 
-get '/' do
-  puts "here is some data"
-end
 
 post '/' do
-  puts body
-  status 201
+  data = JSON.parse request.body.read
+  multi_word_spam(data["email_text"])
+  # puts data
 end
-
-put '/' do
-  puts "Data: '#{params[:foo]}' recieved, updating object."
-end
-
-delete '/' do
-  puts 'Deleting data.'
-end
-
 
 def calc_spamminess(word)
   @ham = YAML::load_file "ham.yml"
