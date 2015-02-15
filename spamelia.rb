@@ -6,6 +6,7 @@ require 'yaml'
 get '/' do
   "Hi"
 end
+
 # multi_word_spam(test_message)
 
 def probability_per_word(word)

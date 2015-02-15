@@ -1,2 +1,2 @@
 
-web: bundle exec ruby colorwork.rb -p $PORT
+web: bundle exec ruby spamelia.rb -p $PORT
