@@ -14,25 +14,28 @@ def calc_spamminess(word)
     # total num of emails
     total_emails = (@ham[1] + @spam[1])
 
+    if @spam[0].has_key?(word)
+
+      # num of spam emails containing spam word
+      spam_word = @spam[0][word]
     
-    # num of spam emails containing spam word
-    spam_word = @spam[0].fetch(word, 0)
+      # total num of email containing spam word
+      total_word = @ham[0].fetch(word, 0.0) + spam_word
 
+      # (a * b)/c
+      a = spam_word / spam_emails.to_f
+      
+      b = spam_emails / total_emails.to_f
 
-    # total num of email containing spam word
-    total_word = @ham[0].fetch(word, 0) + spam_word
+      c = total_word / total_emails.to_f
 
-    # (a * b)/c
-    a = spam_word / spam_emails.to_f
-    
-    b = spam_emails / total_emails.to_f
-
-    c = total_word / total_emails.to_f
-
-    percent_spammy = (a * b)/c
-    
-    puts "#{word} is #{percent_spammy * 100}% spammy"
-    return percent_spammy   
+      percent_spammy = (a * b)/c
+      
+      puts "#{word} is #{percent_spammy * 100}% spammy"
+      return percent_spammy
+    else
+      return 0.01
+    end
 end
 
 def multi_word_spam(message)
@@ -41,9 +44,9 @@ def multi_word_spam(message)
   likelyhood = 0
 
 
-  message.force_encoding("iso-8859-1").gsub!(/ <.*> /, '')
+  message.force_encoding("iso-8859-1").gsub!(/ <.*> /, ' ')
     # removes most email addresses
-  message.gsub!(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i, '')
+  message.gsub!(/\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i, ' ')
     # removes punctuation
   message.gsub!(/ [[:punct:]] /, ' ')
     # remove number/letter "words"
@@ -53,8 +56,9 @@ def multi_word_spam(message)
         
   message.split(' ').each do |w|
 
-    next if w.length < 3 || w.length > 15 || stopwords.include?(w)
+    next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
     w.downcase!
+    
     pr = calc_spamminess(w)
 
     pr = 0.99 if pr == 1.0
@@ -63,6 +67,7 @@ def multi_word_spam(message)
     if p_array.length > 1
       percent = p_array.reduce(:*)/ (p_array.reduce(:*) + p_array.map {|p| 1 - p.to_f}.reduce(:*))
       puts percent
+      
       if percent >= 0.90
         likelyhood = percent
         break
@@ -75,54 +80,24 @@ def multi_word_spam(message)
 end
 
 test_message = <<HEREDOC
-  Dear Friend:
+Martin Adamson wrote:
+> 
+> Isn't it just basically a mixture of beaten egg and bacon (or pancetta, 
+> really)? You mix in the raw egg to the cooked pasta and the heat of the pasta 
+> cooks the egg. That's my understanding.
+> 
 
-Find solutions to all your daily problems and life's challenges at the click of a mouse button?
+You're probably right, mine's just the same but with the cream added to the 
+eggs.  I guess I should try it without.  Actually looking on the internet for a 
+recipe I found this one from possibly one of the scariest people I've ever seen, 
+and he's a US Congressman:
+<http://www.virtualcities.com/ons/me/gov/megvjb1.htm>
 
-We have the answers you're looking for on The Word Bible CD-ROM it is one of the most powerful, life-changing tools available today and it's easy to use.
+That's one of the worst non-smiles ever.
 
-On one CD, (Windows or Macintosh versions) you have a complete library of Bibles, well known reference books and study tools. You can view several Bible versions simultaneously, make personal notes, print scriptures and search by word, phrase or topic.
-
-The Word Bible CD offers are simply amazing.
-
-The wide range of resources on the CD are valued at over $1,500 if purchased separately.
-
-** 14 English Bible Versions
-** 32 Foreign Language Versions
-** 9 Original Language Versions
-** Homeschool Resource Index
-** 17 Notes & Commentaries
-** Colorful Maps, Illustrations, & Graphs
-** Step-by-Step Tutorial
-** Fast & Powerful Word/Phrase Search
-** More than 660,000 cross references
-** Complete Manual With Index
-
-Also:
-
-** Build a strong foundation for dynamic Bible Study,
-** Make personal notes directly into your computer,
-** Create links to favorite scriptures and books.
-
-
-Try it. No Risk. 30-day money-back guarantee
-[excluding shipping & handling]
-
-If you are interested in complete information on The Word CD, please visit our
-Web site: http://bible.onchina.net/ 
-
-US and International orders accepted. Credit cards and personal checks accepted.
-
-If your browser won't load the Web site please click the link below to send us an e-mail and we will provide you more information.
-
-mailto:bible-cd@minister.com?subject=Please-email-Bible-info   
-
-Your relationship with God is the foundation of your life -- on earth and for eternity. It's the most important relationship you'll ever enjoy. Build your relationship with God so you can reap the life-changing benefits only He can provide: unconditional love; eternal life; financial and emotional strength; health; and solutions to every problem or challenge you'll ever face.
-
-May God Bless You,
-GGII Ministries, 160 White Pines Dr., Alpharetta Ga, 30004
-E-mail address:Bible-CD@minister.com 
-Phone:  770-343-9724
+Stew
+ps. Apologies if any of the list's Maine residents voted for this man, you won't 
+do it again once you've seen this pic.
 HEREDOC
 
 multi_word_spam(test_message)
