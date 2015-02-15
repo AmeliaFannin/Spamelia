@@ -36,7 +36,6 @@ class CountSamples
       sample << email.join
       size += 1
     end
-    puts size, sample.length
     return [size, sample]
   end
 
@@ -58,7 +57,7 @@ class CountSamples
         s.gsub!(/\W/, ' ')
         
         s.split(' ').each do |w|
-          next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
+          next if w.length < 3 || w.length > 15 || stopwords.include?(w)
           w.downcase!
           sample_array << w unless sample_array.include?(w)
         end
