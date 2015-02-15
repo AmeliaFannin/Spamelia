@@ -8,7 +8,7 @@ get '/' do
 end
 
 post '/' do
-  "posted something"
+  puts parameters
 end
 
 
