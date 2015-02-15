@@ -1,14 +1,24 @@
 require 'sinatra'
 require 'bundler'
-
+# require 'net/http'
+# require 'uri'
 require 'yaml'
 
 get '/' do
-  "hi there"
+  "here is some data"
 end
 
 post '/' do
-  puts parameters
+  puts "Data: '#{params[:foo]}' recieved, creating object"
+  status 201
+end
+
+put '/' do
+  puts "Data: '#{params[:foo]}' recieved, updating object."
+end
+
+delete '/' do
+  puts 'Deleting data.'
 end
 
 
