@@ -5,11 +5,11 @@ require 'bundler'
 require 'yaml'
 
 get '/' do
-  "here is some data"
+  puts "here is some data"
 end
 
 post '/' do
-  puts "Data: '#{params[:foo]}' recieved, creating object"
+  puts body
   status 201
 end
 
