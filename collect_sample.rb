@@ -1,41 +1,31 @@
 require 'yaml'
 
-# settings = YAML::load_file "settings.yml"
-
-# puts settings.inspect
 class CountSamples
 
   def initialize
-    ham_files = ["easy_ham"]
-    spam_files = ["spam", "spam_2"]
+    ham = open_sample(["easy_ham"])
+    write_to_file("ham", ham)
+
+    spam = open_sample(["spam", "spam_2"])
+    write_to_file("spam", spam)
+  end
+
+  def open_sample(source)
+    total_sample = [0, []]
     
-    ham = [0, []]
-    spam = [0, []]
-    
-    ham_files.each do |h|
-      ham_sample = get_sample(h)
+    source.each do |i|
+      sample = get_sample(i)
 
-      ham[0] += ham_sample[0]
-      ham[1] += ham_sample[1]
+      total_sample[0] += sample[0]
+      total_sample[1] += sample[1]
     end
 
-    spam_files.each do |s|
-      spam_sample = get_sample(s)
-      spam[0] += spam_sample[0]
-      spam[1] += spam_sample[1]
-    end
-     
-    # spam = get_sample("spam") + get_sample("spam_2")
+    total_sample
+  end
 
-    ham_hash = [count_frequency(ham[1]), ham[0]]
-    spam_hash = [count_frequency(spam[1]), spam[0]]
-
-    File.open("ham.yml", "w") do |file|
-      file.write ham_hash.to_yaml
-    end
-
-    File.open("spam.yml", "w") do |file|
-      file.write spam_hash.to_yaml
+  def write_to_file(name, sample)
+    File.open("#{name}.yml", "w") do |file|
+      file.write [count_frequency(sample[1]), sample[0]].to_yaml
     end
   end
 
