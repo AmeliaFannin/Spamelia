@@ -1,4 +1,4 @@
-# Wellframe Interview Spam Filter API
+# Spam Filter API
 
 I built a Bayesian spam filter deployed to heroku using sinatra.
 
