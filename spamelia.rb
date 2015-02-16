@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'bundler'
 require 'yaml'
-require 'sinatra/json'
+require 'json'
 
 get '/' do
   "hello"
