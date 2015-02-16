@@ -1,8 +1,11 @@
 require 'sinatra'
 require 'bundler'
 require 'yaml'
-require 'JSON'
+require 'sinatra/json'
 
+get '/' do
+  "hello"
+end
 
 post '/' do
   data = JSON.parse request.body.read
