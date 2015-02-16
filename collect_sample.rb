@@ -5,7 +5,7 @@ class CountSamples
   def initialize
     ham = open_sample(["easy_ham"])
     write_to_file("ham", ham)
-
+    
     spam = open_sample(["spam", "spam_2"])
     write_to_file("spam", spam)
   end

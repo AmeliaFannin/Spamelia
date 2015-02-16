@@ -6,8 +6,6 @@ require 'JSON'
 
 post '/' do
   data = JSON.parse request.body.read
-
-
   status 400 unless multi_word_spam(data["email_text"])
 end
 
