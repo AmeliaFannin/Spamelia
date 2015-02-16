@@ -10,9 +10,9 @@ end
 post '/' do
   data = JSON.parse request.body.read
   if multi_word_spam(data["email_text"])
-    response = "Spam"
+    response = ("Spam").to_json
   else
-    response = "Not-Spam"
+    response = ("Not-Spam").to_json
   end
 end
 
