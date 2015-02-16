@@ -3,10 +3,6 @@ require 'bundler'
 require 'yaml'
 require 'json'
 
-get '/' do
-  "hello"
-end
-
 post '/' do
   data = JSON.parse request.body.read
   if multi_word_spam(data["email_text"])
@@ -16,42 +12,33 @@ post '/' do
   end
 end
 
-
 def calc_spamminess(word)
   @ham = YAML::load_file "ham.yml"
   @spam = YAML::load_file "spam.yml"
 
-    # [0] = the hash [1] = size of sample
-    word = word.downcase
-    
-    if @spam[0].has_key?(word)
-    # total num of spam emails
-    spam_emails = @spam[1]
+  # [0] = the hash, [1] = size of sample
+  word = word.downcase
 
-    # total num of emails
+  if @spam[0].has_key?(word)
+    spam_emails = @spam[1]
     total_emails = (@ham[1] + @spam[1])
 
+    # num of spam emails containing spam word
+    spam_word = @spam[0][word]
     
-      # num of spam emails containing spam word
-      spam_word = @spam[0][word]
-    
-      # total num of email containing spam word
-      total_word = @ham[0].fetch(word, 0.0) + spam_word
+    # total num of emails containing spam word
+    total_word = @ham[0].fetch(word, 0.0) + spam_word
 
-      # (a * b)/c
-      a = spam_word / spam_emails.to_f
-      
-      b = spam_emails / total_emails.to_f
+    a = spam_word / spam_emails.to_f  
+    b = spam_emails / total_emails.to_f
+    c = total_word / total_emails.to_f
 
-      c = total_word / total_emails.to_f
-
-      percent_spammy = (a * b)/c
-      
-      # puts "#{word} is #{percent_spammy * 100}% spammy"
+    percent_spammy = (a * b)/c
       return percent_spammy
     else
       return 0.01
     end
+  end
 end
 
 def multi_word_spam(message)
@@ -67,28 +54,23 @@ def multi_word_spam(message)
   message.gsub!(/\w+\d+/, ' ')
     #removes characters
   message.gsub!(/\W/, ' ')
-        
+  
   message.split(' ').each do |w|
+    w.downcase!
     next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
     
-        w.downcase!
-        
-        pr = calc_spamminess(w)
-      
-        pr = 0.99 if pr == 1.0
-        p_array << pr   
+    pr = calc_spamminess(w)
+    pr = 0.99 if pr == 1.0
+    p_array << pr
 
-
-      if p_array.length > 1 
-        percent = p_array.reduce(:*)/ (p_array.reduce(:*) + p_array.map {|p| 1 - p.to_f}.reduce(:*))
+    if p_array.length > 1
+      percent = p_array.reduce(:*)/ (p_array.reduce(:*) + p_array.map {|p| 1 - p.to_f}.reduce(:*))
         
-        if percent >= 0.75
-          return true
-          # return "probably spam."
-        elsif percent < 0.01
-          return false
-          # return "probably not spam."
-        end
+      if percent >= 0.75
+        return true
+      elsif percent < 0.01
+        return false
       end
+    end
   end
 end

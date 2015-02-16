@@ -15,7 +15,6 @@ class CountSamples
     
     source.each do |i|
       sample = get_sample(i)
-
       total_sample[0] += sample[0]
       total_sample[1] += sample[1]
     end
@@ -45,7 +44,6 @@ class CountSamples
       size += 1
     end
 
-    puts size
     return [size, sample]
   end
 
@@ -67,8 +65,9 @@ class CountSamples
         s.gsub!(/\W/, ' ')
         
         s.split(' ').each do |w|
-          next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
           w.downcase!
+          next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
+
           sample_array << w unless sample_array.include?(w)
         end
     
@@ -81,7 +80,8 @@ class CountSamples
         end
       end
     end
-    return hash
+    
+    hash
   end
 end
 
