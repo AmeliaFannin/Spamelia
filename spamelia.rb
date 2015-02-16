@@ -6,9 +6,9 @@ require 'JSON'
 
 post '/' do
   data = JSON.parse request.body.read
-  result = multi_word_spam(data["email_text"]).to_json
-  file = data["file_name"].to_json
-  response = "#{file} is #{result}"
+
+
+  status 400 unless multi_word_spam(data["email_text"])
 end
 
 
@@ -78,9 +78,11 @@ def multi_word_spam(message)
         percent = p_array.reduce(:*)/ (p_array.reduce(:*) + p_array.map {|p| 1 - p.to_f}.reduce(:*))
         
         if percent >= 0.75
-          return "probably spam."
+          return true
+          # return "probably spam."
         elsif percent < 0.01
-          return "probably not spam."
+          return false
+          # return "probably not spam."
         end
       end
   end
