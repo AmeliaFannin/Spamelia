@@ -34,10 +34,10 @@ def calc_spamminess(word)
     c = total_word / total_emails.to_f
 
     percent_spammy = (a * b)/c
-      return percent_spammy
-    else
-      return 0.01
-    end
+      
+    return percent_spammy
+  else
+    return 0.01
   end
 end
 
@@ -54,7 +54,7 @@ def multi_word_spam(message)
   message.gsub!(/\w+\d+/, ' ')
     #removes characters
   message.gsub!(/\W/, ' ')
-  
+
   message.split(' ').each do |w|
     w.downcase!
     next if w.length <= 3 || w.length > 15 || stopwords.include?(w)
