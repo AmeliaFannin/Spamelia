@@ -3,6 +3,10 @@ require 'bundler'
 require 'yaml'
 require 'json'
 
+get '/' do
+  redirect '/about.html'
+end
+
 post '/' do
   data = JSON.parse request.body.read
   if multi_word_spam(data["email_text"])
