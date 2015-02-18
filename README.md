@@ -26,6 +26,8 @@ utils/spamelia_test.rb sends Post request to api with samples of ham and spam fr
 
   - Find more efficient ways to eliminate or skip over non-words in emails during the filter building process.
 
+  - And, rewrite the filter in something like Go.  
+
 
 ### Scaling:
 
